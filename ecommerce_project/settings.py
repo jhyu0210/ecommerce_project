@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # WEBSITE_URL='http://localhost:8000/'
-WEBSITE_URL ='43.201.52.175:8000/'
+WEBSITE_URL ='https://43.201.52.175:8000/'
 
 
 CART_SESSION_ID = 'cart'
