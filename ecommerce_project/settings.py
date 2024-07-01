@@ -27,7 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-WEBSITE_URL='http://localhost:8000/'
+# WEBSITE_URL='http://localhost:8000/'
+WEBSITE_URL ='43.201.52.175/'
+
 
 CART_SESSION_ID = 'cart'
 SESSION_COOKIE_AGE = 86400
