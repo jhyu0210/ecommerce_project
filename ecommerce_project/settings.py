@@ -29,7 +29,7 @@ ALLOWED_HOSTS = ["*"]
 
 # WEBSITE_URL='http://localhost:8000/'
 # WEBSITE_URL ='http://43.201.52.175:8000/'
-WEBSITE_URL ='43.203.198.133/'
+WEBSITE_URL ='3.38.117.7/'
 
 
 
