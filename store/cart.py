@@ -18,7 +18,7 @@ class Cart(object):
     for item in self.cart.values():
       item['total_price'] = int(item['product'].price * item['quantity']) / 100
 
-      yield item
+      yield item # differnt resulats than return (generator)
     
   def __len__(self):
     return sum(item['quantity'] for item in self.cart.values())
@@ -27,7 +27,7 @@ class Cart(object):
     self.session[settings.CART_SESSION_ID] = self.cart
     self.session.modified = True
   
-  def add(self, product_id,quantity=1, update_quantity=False):
+  def add(self, product_id, quantity=1, update_quantity=False):
     product_id =str(product_id)
     
     if product_id not in self.cart:
@@ -35,13 +35,13 @@ class Cart(object):
       
     if update_quantity:
       self.cart[product_id]['quantity'] += int(quantity)
-      
       if self.cart[product_id]['quantity'] == 0:
         self.remove(product_id)
       
     self.save()
     
   def remove(self,product_id):
+    print("product id to update>>>>", product_id,type(product_id))
     if product_id in self.cart:
       del self.cart[product_id]
       
@@ -55,3 +55,12 @@ class Cart(object):
     for p in self.cart.keys():
       self.cart[str(p)]['product'] = Product.objects.get(pk=p)
     return int(sum(item['product'].price * item['quantity'] for item in self.cart.values())) /100
+
+  # def get_item(self, product_id):
+  #   return self.cart[str(product_id)]
+
+  def get_item(self, product_id):
+    if str(product_id) in self.cart:
+        return self.cart[str(product_id)]
+    else:
+        return None

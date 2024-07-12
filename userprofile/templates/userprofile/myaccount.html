@@ -1,7 +1,60 @@
 {% extends 'core/base.html' %} 
 {% block title %} My Account {% endblock%} 
 {% block content %}
-<h1 class="text-2xl">My Account</h1>
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="mb-5 text-3xl">My account</h1>
+
+  <div class="mb-6">
+      <strong>Name: </strong>{{ request.user.get_full_name }}<br>
+      <strong>Username: </strong>{{ request.user.username }}<br>
+      <strong>E-mail: </strong>{{ request.user.email }}<br>
+
+      <a href="#" class="inline-block mt-4 py-4 px-6 rounded-xl text-white bg-purple-500">Edit</a>
+  </div>
+
+  <hr>
+
+  <h2 class="my-6 text-xl">My orders</h2>
+
+  {% for order in request.user.orders.all %}
+      <div class="w-full mb-6 p-6 flex flex-wrap bg-gray-100 rounded-xl">
+          <div class="mb-6 flex justify-between">
+              <a href="#">Order id: {{ order.id }}</a>
+          </div>
+
+          <div class="mb-6 w-full">
+              {% for item in order.items.all %}
+                  <div class="product mb-6 flex pr-6">
+                      <a href="#" class="w-1/4">
+                          <img class="hover:shadow-lg rounded-xl" src="{% if item.product.image %}{{ item.product.image.url }} {% else %} data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAAZlBMVEXu7u4AAABmZmb19fUrKyu/v79XV1ddXV2jo6PIyMi2trby8vKoqKjQ0NDExMRgYGB9fX2dnZ2VlZWJiYl0dHRvb29JSUlAQEBOTk7Y2NgcHBzk5OSDg4MYGBg3NzcxMTEODg4kJCStaN1MAAAD10lEQVR4nO3b63aiOgCGYRI0SQk1BwIECSD3f5M7VVtP7L3X6NiJne/50SpNW96VQFzLNssAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF6UfNSfDjgju7fHdAnV5CXnnN0rfm+R/+mEkxgjivuZxGLY+/0LRW7Yz4nJEPM0iDl50Zjl3fElY2TW99nCuBeMkdmbqWy5MPAVY4o67vVcv92MfL0Y+e4UjVS4eSH2ejFZyenBzZm/XIzs7TGGlz8gxrx2zMUhWewvGarqmztA+jGyKy5qZF99TI1S4marST4m74I3lzWdrZVyon+5W7PsKkXZ5STEXbMo3hdeAiQes2+J1/rlNEiZ50uvztKOObZEC4tqPyA/P5x0jOzDsSXWLL2ylPLicMoxMnNfLXTh5hXnRXB9NjcJx8ienlooZea6RkqjqNKnw+nGyL7m9NzVPS0+EfubQ/V1OSUbIzt92XJdE1sOA9RXTaoxca9U9Nr5SpNZ+TmA22NNojFyqeV8bo5r7HhzONakGfMvLafd82uNXdQkGXPaK2+ofY3MzeWAw3WTXsx/zMue6eX+nnwVGeJspRcjL/bKpZWWXc/LvkbneXox+eVeuVRjlwZwnb2lFtP19Hp/uTnt5QEqrBN7f4avb/bKX6DSilH/s8ZeLOYRiHkWxCDmG+Ti4y8T7pfUpik34iHmkXdEfzuZPyalFgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAv9eD/yyWlGz9g2SrHyQjPwhiUnWImQdCVsP114ZmdfZsu/2uc7rbIcbRHSk+D7nPB7ayzar9fEbVt57YPY4xYpr7qaoJt9TLerbVyC3PtloX5aRNQ7RlwVG+e+KZ+N1q/Pi83a+QmbLp8Num8+VBRqZoQxmjXnHGm5XyQ82Guj2L2RWtDUVljA3CS2orUxWiLQvblqKyes2KEGxp2RNbiCGBqdbXump0Ez8yS7mba8rrkTAdH/jg3BC/aCbnWNl4V5WUOsuZoK5enWKI4f2Q1aEIpCE9eSNcrH3raWVqbTjZGE1m29ubq+p3csyEsqibQG1rTOO08KY1rjVlS2xLtRK2FmNFxmpUlDhHzEi58LadjN3WzVlM023Ie2VtGTaDbExUsrGjhQmiErrz71qIak2fGUM656zVIVZQYb2xQpXOmroq67bUtQim4kJRZq1yjba6qSYTPwm1qZ0N5zND9EimwEkTPOFu6+rBr4gPlLRuUmGO89y248ieec3ENbH127Hd+YHvpl3Tzu2KkbYZVtMUH4zxwXY28863w0xGP0y7OIY006T4zk/7n/APANlhozGytu0AAAAASUVORK5CYII= {% endif %}"
+                          alt={{item.product.title}} 
+                          >
+                      </a>
+
+                      <div class="w-3/4 pl-6">
+                          <div class="flex justify-between">
+                              <a href="#" class="text-lg">{{ item.product.title }}</a>
+
+                              <p class="mb-6 pt-1 text-gray-400">${{ item.get_total_price }}</p>
+                          </div>
+
+                          <hr>
+
+                          <div class="mt-6">
+                              Quantity: {{ item.quantity }}
+                          </div>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+
+          <div>
+              <p class="text-lg">Date: {{ order.created_at }}</p>
+              <p class="text-lg">Total: ${{ order.get_total_price }}</p>
+          </div>
+      </div>
+  {% endfor %}
+</div>
 <form method="post" action="{% url 'do-logout' %}">
   {% csrf_token %}
   <button type="submit">logout</button>

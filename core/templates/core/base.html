@@ -18,8 +18,7 @@
   </head>
   <body>
     <nav
-      class="max-w-6xl bg-teal-600 py-4 px-6 mx-auto flex items-center justify-between"
-    >
+      class="bg-teal-600 py-4 px-6 mx-auto flex items-center justify-between">
       <div class="logo">
         <a
           href="{% url 'frontpage' %}"
@@ -36,19 +35,27 @@
           </button>
         </form>
       </div>
-      <div class="menu flex space-x-4 items-center">
-        {% menu %} 
-        <a href="{% url 'cart_view' %}" class="flex space-x-3 py-2 px-4 bg-teal-800 text-white rounded-xl hover:bg-teal-900">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-          </svg>
-          <span>({{ cart|length }})</span>
-      </a>
-        
+      <div class="menu-right flex space-x-5 items-center">
+        {% comment %} {% menu %}  {% endcomment %}
+        <a href="{% url 'aboutpage' %}" class="font-semibold text-white">About</a>
+        <a href="{% url 'shop' %}" class="text-white hover:text-teal-200"
+              >Shop</a
+            >
+            
+        <div
+          hx-get="{% url 'hx_menu_cart' %}"
+          hx-trigger = 'update-menu-cart from:body'
+          hx-swap="innerHTML"
+          >
+          {% include "store/partials/menu_cart.html" %}
+            
+        </div>
+      
         {% if request.user.is_authenticated %}
-
-          <a href="{% url 'myaccount' %}" class="rounded-xl py-2 px-4 bg-teal-700 hover:bg-teal-900 font-semibold text-white"
-            >My Account</a
+          <a href="{% url 'myaccount' %}" 
+            ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-white size-6 hover:bg-teal-900 rounded-full">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg></a
           >
           {% if request.user.userpofile.is_vendor %}
             <a href="{% url 'my_store' %}" class="rounded-xl py-2 px-4 bg-teal-700 hover:bg-teal-900 font-semibold text-white"
@@ -58,9 +65,28 @@
         {% endif %}
       </div>
     </nav>
-    <div class="max-w-4xl mx-auto py-4 px-6">
-      {% block content%} {% endblock %}
-    </div>
+    <main>
+      {% block content%} {% endblock %} 
+    </main>
+   
+    <footer class='bg-gray-100 '>
+      <div class="max-w-6xl mx-auto py-10 px-6 xl:px-0 md:flex justify-between">
+        <div class="footer-left mb-12 md:mb-0">
+          <h2 class="mb-5 uppercase text-lg">About Us</h2>
+          <p class="text-gray-700">Lorem Ipsum bla bla</p>
+        </div>
+        <div class="footer-right">
+          <h2 class="mb-5 uppercase text-lg">Social Links</h2>
+          <ul class="space-x-2">
+            <li><a href="#" class="text-purple-500 hover:text-purple-900">Facebook</a></li>
+            <li><a href="#" class="text-purple-500 hover:text-purple-900">X</a></li>
+            <li><a href="#" class="text-purple-500 hover:text-purple-900">Instagram</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </footer>
+    <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
     {% block scripts %}
     {% endblock %}
   </body>

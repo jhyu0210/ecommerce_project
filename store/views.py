@@ -45,7 +45,18 @@ def search(request):
     'query': query,
     'products': products
   })
-  
+
+def hx_menu_cart(request):
+  return render(request,'store/partials/menu_cart.html')
+
+def hx_cart_total(request):
+  return render(request,'store/partials/hx_cart_total.html')
+
+def hx_add_to_cart(request,product_id):
+  cart= Cart(request)
+  cart.add(product_id)
+  return render(request, 'store/partials/menu_cart.html')
+
 def add_to_cart(request, product_id):
   cart = Cart(request)
   cart.add(product_id)
@@ -54,6 +65,31 @@ def add_to_cart(request, product_id):
 
 @login_required
 def checkout(request):
+    form=OrderForm()
+    pub_key = settings.STRIPE_PUB_KEY 
+    return render(request, 'store/checkout.html', { 'pub_key': pub_key })
+  # cart = Cart(request)
+  # if request.method=='POST':
+  #   first_name =request.POST.get('first_name')
+  #   last_name =request.POST.get('last_name')
+  #   zipcode =request.POST.get('zipcode')
+  #   address =request.POST.get('address')
+  #   city =request.POST.get('city')
+    
+  #   order = Order.objects.create(created_by=request.user,
+  #     first_name=first_name,last_name=last_name,zipcode=zipcode,address=address,city=city
+  #   )
+  #   for item in cart:
+  #     product = item['product']
+  #     quantity = int(item['quantity'])
+  #     price = product.price * quantity
+
+  #     item = OrderItem.objects.create(order=order,product=product,price=price)
+  #   return redirect('myaccount')
+  # return redirect('cart')
+
+@login_required
+def start_order(request):
   cart= Cart(request)
   if cart.get_total_cost() == 0:
     return redirect('cart_view')
@@ -139,16 +175,16 @@ def checkout(request):
     
     # return redirect('myaccount')
     return JsonResponse({'session':session, 'order':payment_intent})
-  else:
-    form=OrderForm()
+  # else:
+  #   form=OrderForm()
   
-  # 1. adding pubkey for stripe
+  # # 1. adding pubkey for stripe
   
-  return render(request,'store/checkout.html',{
-    'cart':cart,
-    'form':form,
-    'pub_key': settings.STRIPE_PUB_KEY,
-  })
+  # return render(request,'store/checkout.html',{
+  #   'cart':cart,
+  #   'form':form,
+  #   'pub_key': settings.STRIPE_PUB_KEY,
+  # })
 
 def remove_from_cart(request,product_id):
   cart =Cart(request)
@@ -161,18 +197,48 @@ def remove_from_cart(request,product_id):
 def success(request):
   return render(request, 'store/success.html')
 
-def change_quantity(request, product_id):
-  cart =Cart(request)
-  
-  action = request.GET.get('action','')
-  
-  if action:
-    quantity = 1
-    if action == 'decrease':
-      quantity = -1
+# htmx--------------
+def update_cart(request, product_id, action):
+  cart = Cart(request)
+
+  if action == 'increment':
+    cart.add(product_id, 1,True)
+  else:
+    cart.add(product_id, -1, True)
+  product = Product.objects.get(pk=product_id)
+  # quantity = cart.get_item(product_id)['quantity']
+  quantity = cart.get_item(product_id)
+  if quantity:
+    quantity = quantity['quantity']
     
-    cart.add(product_id, quantity, True)
-  return redirect('cart_view')
+    item= {
+      'product': {
+        'id': product.id,
+        'title': product.title,
+        'image': product.image,
+        'price': product.price,
+      },
+      'total_price': (quantity * product.price) / 100,
+      'quantity':quantity
+    }
+  else:
+    item = None
+  response = render(request, 'store/partials/cart_item.html',{'item':item})
+  response['HX-Trigger'] = 'update-menu-cart'
+  return response
+#-------------------
+# def change_quantity(request, product_id):
+#   cart =Cart(request)
+  
+#   action = request.GET.get('action','')
+  
+#   if action:
+#     quantity = 1
+#     if action == 'decrease':
+#       quantity = -1
+    
+#     cart.add(product_id, quantity, True)
+#   return redirect('cart_view')
 
 def cart_view(request):
   cart = Cart(request)

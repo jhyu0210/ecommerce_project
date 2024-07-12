@@ -20,12 +20,17 @@ from core.views import aboutpage, frontpage
 from django.conf import settings
 from django.conf.urls.static import static
 
+# from core.views import shop
+# from core.views import product
 
 
 urlpatterns = [
-    path('about/', aboutpage, name='aboutpage'),
+    # path('about/', aboutpage, name='aboutpage'),
     path('admin/', admin.site.urls),
+    # path('shop/', shop, name='shop'),
+    # path('shop/<slug:slug>/', product, name='product'),
+    path('',include('core.urls')),
     path('', include('userprofile.urls')),
     path('', include('store.urls')),
-    path('', frontpage, name='frontpage'),
+    # path('', frontpage, name='frontpage'),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
